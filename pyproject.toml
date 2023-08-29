@@ -21,24 +21,38 @@ classifiers = [
 ]
 keywords = ['aiida', 'workflows']
 requires-python = '>=3.8'
+# dependencies = [
+#     'abipy',
+#     'aiida-abinit~=0.4.0',
+#     'aiida-bigdft>=0.2.6',
+#     'aiida-castep>=1.2.0a5',
+#     'aiida-core[atomic_tools]~=2.1',
+#     'aiida-cp2k~=1.3',
+#     'aiida-fleur>=1.3.0',
+#     'aiida-gaussian',
+#     'aiida-nwchem>=2.1.0',
+#     'aiida-orca',
+#     'aiida-pseudo>=0.6.0',
+#     'aiida-quantumespresso~=3.4,>=3.4.1',
+#     'aiida-siesta>=1.2.0',
+#     'aiida-vasp',
+#     'pymatgen>=2022.1.20',
+#     'numpy<1.24.0',
+#     'sqlalchemy<1.4',
+#     'ase!=3.20.*',
+#     'pint~=0.16',
+#     'masci-tools~=0.9'
+# ]
+
 dependencies = [
     'abipy',
-    'aiida-abinit~=0.4.0',
-    'aiida-bigdft>=0.2.6',
-    'aiida-castep>=1.2.0a5',
-    'aiida-core[atomic_tools]~=2.1',
-    'aiida-cp2k~=1.3',
-    'aiida-fleur>=1.3.0',
-    'aiida-gaussian',
-    'aiida-nwchem>=2.1.0',
-    'aiida-orca',
+    'aiida-abinit',
+    'aiida-core[atomic_tools]~=2.2',
     'aiida-pseudo>=0.6.0',
-    'aiida-quantumespresso~=3.4,>=3.4.1',
-    'aiida-siesta>=1.2.0',
-    'aiida-vasp',
+    'aiida-quantumespresso',
     'pymatgen>=2022.1.20',
-    'numpy<1.24.0',
-    'sqlalchemy<1.4',
+    'numpy',
+    'sqlalchemy',
     'ase!=3.20.*',
     'pint~=0.16',
     'masci-tools~=0.9'
@@ -77,6 +91,7 @@ acwf = 'aiida_common_workflows.cli:cmd_root'
 'common_workflows.dissociation_curve' = 'aiida_common_workflows.workflows.dissociation:DissociationCurveWorkChain'
 'common_workflows.eos' = 'aiida_common_workflows.workflows.eos:EquationOfStateWorkChain'
 'common_workflows.relax.abinit' = 'aiida_common_workflows.workflows.relax.abinit.workchain:AbinitCommonRelaxWorkChain'
+'common_workflows.relax.dftk' = 'aiida_common_workflows.workflows.relax.dftk.workchain:DftkCommonRelaxWorkChain'
 'common_workflows.relax.bigdft' = 'aiida_common_workflows.workflows.relax.bigdft.workchain:BigDftCommonRelaxWorkChain'
 'common_workflows.relax.castep' = 'aiida_common_workflows.workflows.relax.castep.workchain:CastepCommonRelaxWorkChain'
 'common_workflows.relax.cp2k' = 'aiida_common_workflows.workflows.relax.cp2k.workchain:Cp2kCommonRelaxWorkChain'
