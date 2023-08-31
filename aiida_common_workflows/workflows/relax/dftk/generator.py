@@ -26,6 +26,7 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
     """Input generator for the `DftkCommonRelaxWorkChain`."""
 
     _default_protocol = 'verification-pbe-v1'
+    _default_smearing_temperature = 0.1 * units.eV_to_Ha  # eV -> Ha
 
     def __init__(self, *args, **kwargs):
         """Construct an instance of the input generator, validating the class attributes."""
@@ -44,13 +45,14 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
         The ports defined on the specification are the inputs that will be accepted by the ``get_builder`` method.
         """
         super().define(spec)
+        # TODO: spin and relax after spin and relax implementation in aiida and DFTK
         # spec.inputs['spin_type'].valid_type = ChoiceType(tuple(SpinType))
         # spec.inputs['relax_type'].valid_type = ChoiceType([
         #     t for t in RelaxType if t not in (RelaxType.VOLUME, RelaxType.SHAPE, RelaxType.CELL)
         # ])
-        # spec.inputs['electronic_type'].valid_type = ChoiceType(
-        #     (ElectronicType.METAL, ElectronicType.INSULATOR, ElectronicType.UNKNOWN)
-        # )
+        spec.inputs['electronic_type'].valid_type = ChoiceType(
+            (ElectronicType.METAL, ElectronicType.INSULATOR, ElectronicType.UNKNOWN, ElectronicType.AUTOMATIC)
+        )
         spec.inputs['engines']['relax']['code'].valid_type = CodeType('dftk')
         spec.inputs['protocol'].valid_type = ChoiceType(('fast', 'moderate', 'precise', 'verification-pbe-v1', 'fastest'))
 
@@ -63,10 +65,9 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
         structure = kwargs['structure']
         engines = kwargs['engines']
         protocol = kwargs['protocol']
-        # TODO: spin after spin implementation in aiida
         # spin_type = kwargs['spin_type']
         # relax_type = kwargs['relax_type']
-        # electronic_type = kwargs['electronic_type']
+        electronic_type = kwargs['electronic_type']
         # magnetization_per_site = kwargs.get('magnetization_per_site', None)
         # threshold_forces = kwargs.get('threshold_forces', None)
         # threshold_stress = kwargs.get('threshold_stress', None)
@@ -168,31 +169,39 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
         # TODO: relax_type after relax implementation in DFTK
         # TODO: spin_type after spin implementation in aiida
 
-        # TODO: electronic_type after spin implementation in DFTK
+
         # ElectronicType
-        # if electronic_type == ElectronicType.UNKNOWN:
-        #     # protocol defaults to UNKNOWN, which is metallic with Gaussian smearing
-        #     pass
-        # elif electronic_type == ElectronicType.METAL:
-        #     builder.Dftk['parameters']['occopt'] = 5  # Marzari-Vanderbilt Cold II smearing
-        # elif electronic_type == ElectronicType.INSULATOR:
-        #     # LATER: Support magnetization with insulators
-        #     if spin_type not in [SpinType.NONE, SpinType.SPIN_ORBIT]:
-        #         raise ValueError(f'`spin_type` {spin_type.value} is not supported for insulating systems.')
-        #     builder.Dftk['parameters']['occopt'] = 1  # Fixed occupations, Dftk default
-        #     builder.Dftk['parameters']['fband'] = 0.125  # Dftk default
-        # else:
-        #     raise ValueError(f'electronic type `{electronic_type.value}` is not supported')
+        # Default: ElectronicType.METAL
+        print("electronic_type: ", electronic_type)
+        if electronic_type == ElectronicType.AUTOMATIC:
+            # Check if smearing & temperature are specified in the protocol
+            if ('smearing' not in builder.dftk['parameters']['model_kwargs'] or 
+                'temperature' not in builder.dftk['parameters']['model_kwargs']):
+                electronic_type = ElectronicType.UNKNOWN
+            else:
+                pass
 
-        # TODO: implement DFTK: is_converged = ScfConvergenceEnergy()*ScfConvergenceForces()
-        # Continue force and stress thresholds from above (see molecule treatment)
-        # builder.Dftk['parameters']['tolmxf'] = threshold_f
-
-        # TODO: threshold_stress after stress implementation in DFTK
-        # if threshold_stress is not None:
-        #     threshold_s = threshold_stress * units.eV_to_Ha / units.ang_to_bohr**3  # eV/Å^3
-        #     strfact = threshold_f / threshold_s
-        #     builder.Dftk['parameters']['strfact'] = strfact
+        if electronic_type == ElectronicType.AUTOMATIC: 
+            # follow the protocol. redundant, but explicit
+            pass
+        else:
+            # override the protocol's smearing and temperature
+            builder.dftk['parameters']['model_kwargs'].pop('smearing', None)
+            builder.dftk['parameters']['model_kwargs'].pop('temperature', None)
+            if electronic_type == ElectronicType.METAL:
+                # Mazari-Vanderbilt (cold) smearing for metals
+                builder.dftk['parameters']['model_kwargs']['smearing'] = {'$symbol': 'Smearing.MarzariVanderbilt'}
+                builder.dftk['parameters']['model_kwargs']['temperature'] = self._default_smearing_temperature
+            elif electronic_type == ElectronicType.UNKNOWN:
+                # Gaussian smearing for unknowns
+                builder.dftk['parameters']['model_kwargs']['smearing'] = {'$symbol': 'Smearing.Gaussian'}
+                builder.dftk['parameters']['model_kwargs']['temperature'] = self._default_smearing_temperature
+            elif electronic_type == ElectronicType.INSULATOR:
+                # fixed occupations for insulators
+                pass
+            else:
+                raise ValueError(f'electronic type `{electronic_type.value}` is not supported')
+            
 
         # previous workchain
         if reference_workchain is not None:
@@ -226,6 +235,7 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
             new_kpoints.set_cell_from_structure(structure)
             new_kpoints.set_kpoints_mesh(previous_kpoints_mesh, previous_kpoints_offset)
             builder.kpoints = new_kpoints
+            builder.pop('kpoints_distance', None)
 
         return builder
 

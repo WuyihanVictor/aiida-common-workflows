@@ -7,7 +7,7 @@ from aiida_common_workflows.common import ElectronicType
 code = orm.load_code('DFTK@local_direct') 
 
 #load silicon structure
-cif = orm.CifData(file="/home/max/Desktop/Aiida_DFTK_Test/common_workflow/aiida-common-workflows/examples/DFTK_Si/Si_primitive.cif")
+cif = orm.CifData(file="/home/max/Desktop/Aiida_DFTK_Test/common_workflow/aiida-common-workflows/examples/DFTK_MoS2/MoS2.cif")
 structure = cif.get_structure()
 
 
@@ -30,5 +30,5 @@ engines = {
 }
 
 #electronic_type: default is 'METAL', AUTOMATIC: follow protocol or UNKOWN, INSULATOR: fixed occupation, METAL: cold smearing, UNKNOWN: gaussian smearing
-builder = RelaxWorkChain.get_input_generator().get_builder(structure=structure, engines=engines, protocol='verification-pbe-v1',electronic_type=ElectronicType.AUTOMATIC)
+builder = RelaxWorkChain.get_input_generator().get_builder(structure=structure, engines=engines, protocol='fastest', electronic_type=ElectronicType.METAL)
 engine.run(builder)

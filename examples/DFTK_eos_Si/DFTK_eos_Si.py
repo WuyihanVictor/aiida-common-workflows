@@ -1,13 +1,14 @@
 from aiida import engine, orm
 from aiida.plugins import WorkflowFactory
-from aiida_common_workflows.common import ElectronicType
+from aiida.orm import List
+from aiida_common_workflows.common import ElectronicType, RelaxType
 
 
 
 code = orm.load_code('DFTK@local_direct') 
 
 #load silicon structure
-cif = orm.CifData(file="/home/max/Desktop/Aiida_DFTK_Test/common_workflow/aiida-common-workflows/examples/DFTK_Si/Si_primitive.cif")
+cif = orm.CifData(file="/home/max/Desktop/Aiida_DFTK_Test/common_workflow/aiida-common-workflows/examples/DFTK_eos_Si/Si_primitive.cif")
 structure = cif.get_structure()
 
 
@@ -29,6 +30,22 @@ engines = {
     }
 }
 
+
+
+cls = WorkflowFactory('common_workflows.eos')
+
 #electronic_type: default is 'METAL', AUTOMATIC: follow protocol or UNKOWN, INSULATOR: fixed occupation, METAL: cold smearing, UNKNOWN: gaussian smearing
-builder = RelaxWorkChain.get_input_generator().get_builder(structure=structure, engines=engines, protocol='verification-pbe-v1',electronic_type=ElectronicType.AUTOMATIC)
-engine.run(builder)
+#relax_type: currently only support NONE: no relaxation
+inputs = {
+    'structure': structure,
+    'scale_factors': List(list=[0.90, 0.94, 0.96, 1, 1.04, 1.06, 1.08]),
+    'generator_inputs': {  # code-agnostic inputs for the relaxation
+        'engines': engines,
+        'protocol': 'fast',
+        'relax_type': RelaxType.NONE,
+        'electronic_type': ElectronicType.AUTOMATIC
+    },
+    'sub_process_class': 'common_workflows.relax.dftk'
+}
+
+engine.run(cls, **inputs)
