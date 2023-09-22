@@ -25,8 +25,8 @@ StructureData = plugins.DataFactory('structure')
 class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
     """Input generator for the `DftkCommonRelaxWorkChain`."""
 
-    _default_protocol = 'verification-pbe-v1'
-    _default_smearing_temperature = 0.1 * units.eV_to_Ha  # eV -> Ha
+    _default_protocol = 'fast'
+    _default_smearing_temperature = 0.1 * units.eV_to_Ha  # 0.1eV -> Ha
 
     def __init__(self, *args, **kwargs):
         """Construct an instance of the input generator, validating the class attributes."""
