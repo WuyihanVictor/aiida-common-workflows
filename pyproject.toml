@@ -46,7 +46,7 @@ requires-python = '>=3.8'
 
 dependencies = [
     'abipy',
-    'aiida-core[atomic_tools]>=2.2',
+    'aiida-core[atomic_tools]>=2',
     'aiida-pseudo>=0.6.0',
     'aiida-quantumespresso',
     'pymatgen>=2022.1.20',
