@@ -1,7 +1,7 @@
 fast:
     name: "fast"
     description: "fast protocol for testing purposes"
-    pseudo_family: "PseudoDojo/0.4/PBE/SR/standard/upf"
+    pseudo_family: "PseudoDojo/0.5/PBE/SR/standard/upf"
     cutoff_stringency: "low"
     base:
         kpoints_distance: 1 # [1/AA]
@@ -27,7 +27,7 @@ fast:
 fastest:
     name: "fastest"
     description: "fastest protocol for testing purposes"
-    pseudo_family: "PseudoDojo/0.4/PBE/SR/standard/upf"
+    pseudo_family: "PseudoDojo/0.5/PBE/SR/standard/upf"
     cutoff_stringency: "low"
     base:
         kpoints_distance: 2 # [1/AA]
@@ -52,7 +52,7 @@ verification-pbe-v1:
     name: "verification-pbe-v1"
     description: "Main protocol for the ACWF verification study - PseudoDojo v0.5"
     pseudo_family: "PseudoDojo/0.5/PBE/SR/standard/upf"
-    cutoff_stringency: "high"
+    cutoff_stringency: "high+20"
     base:
         kpoints_distance: 0.06 # [1/AA]
         dftk:
@@ -70,6 +70,4 @@ verification-pbe-v1:
                             $symbol: "ScfConvergenceDensity"
                     $function: "self_consistent_field"
                     checkpointfile: "scfres.jld2"
-                postscf:
-                  - $function: "compute_forces_cart"
-                  - $function: "compute_stresses_cart"
+                postscf: []

@@ -172,7 +172,6 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
 
         # ElectronicType
         # Default: ElectronicType.METAL
-        print("electronic_type: ", electronic_type)
         if electronic_type == ElectronicType.AUTOMATIC:
             # Check if smearing & temperature are specified in the protocol
             if ('smearing' not in builder.dftk['parameters']['model_kwargs'] or 

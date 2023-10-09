@@ -5,10 +5,10 @@ from aiida_common_workflows.common import ElectronicType, RelaxType
 
 
 
-code = orm.load_code('DFTK@local_direct') 
+code = orm.load_code('dftk@jed_on_scitas') 
 
 #load silicon structure
-cif = orm.CifData(file="/home/max/Desktop/Aiida_DFTK_Test/common_workflow/aiida-common-workflows/examples/DFTK_eos_Si/Si_primitive.cif")
+cif = orm.CifData(file="/home/yiwu/source/aiida-common-workflows/examples/DFTK_eos_Si/Si_primitive.cif")
 structure = cif.get_structure()
 
 
@@ -20,12 +20,14 @@ engines = {
     'relax': {
         'code': code,  # An identifier of a `Code` configured for the `quantumespresso.pw` plugin
         'options': {
-            'withmpi': False,
+            'withmpi': True,
             'resources': {
                 'num_machines': 1,  # Number of machines/nodes to use
-                'num_mpiprocs_per_machine': 1,
+                'num_mpiprocs_per_machine': 24,
             },
-            'max_wallclock_seconds': 3600,  # Number of wallclock seconds to request from the scheduler for each job
+            'max_wallclock_seconds': 7200,  # Number of wallclock seconds to request from the scheduler for each job
+            'max_memory_kb': 344064000,
+            'queue_name': 'bigmem'
         }
     }
 }
@@ -38,14 +40,14 @@ cls = WorkflowFactory('common_workflows.eos')
 #relax_type: currently only support NONE: no relaxation
 inputs = {
     'structure': structure,
-    'scale_factors': List(list=[0.90, 0.94, 0.96, 1, 1.04, 1.06, 1.08]),
+    'scale_factors': List(list=[1, 1, 1]),
     'generator_inputs': {  # code-agnostic inputs for the relaxation
         'engines': engines,
-        'protocol': 'fast',
+        'protocol': 'verification-pbe-v1',
         'relax_type': RelaxType.NONE,
         'electronic_type': ElectronicType.AUTOMATIC
     },
     'sub_process_class': 'common_workflows.relax.dftk'
 }
 
-engine.run(cls, **inputs)
+engine.submit(cls, **inputs)
