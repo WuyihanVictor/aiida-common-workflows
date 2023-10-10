@@ -11,9 +11,9 @@ from .generator import DftkCommonRelaxInputGenerator
 
 __all__ = ('DftkCommonRelaxWorkChain',)
 
-_Ha_to_eV = 1/27.2114079527
-_HaPerBohrCube_to_eVPerAngCube = 1/183.631605295
-_HaPerBohr_to_eVPerAng = 1/51.42208619083232
+_Ha_to_eV = 27.2114079527
+_HaPerBohrCube_to_eVPerAngCube = 183.631605295
+_HaPerBohr_to_eVPerAng = 51.42208619083232
 
 # TODO: implement more efficient stress computation in DFTK
 # @calcfunction
