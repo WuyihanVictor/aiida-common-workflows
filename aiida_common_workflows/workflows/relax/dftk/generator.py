@@ -91,7 +91,7 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
             structure=structure, stringency=cutoff_stringency, unit='Eh'
         )
 
-        rcut = orm.Float(protocol['base']['dftk']['rcut'])
+        pseudo_rcut = orm.Float(protocol['base']['dftk']['pseudo_rcut'])
 
         #TODO: pawecutdg after PAW implementation in DFTK
         # All are NC; no need for `pawecutdg`
@@ -103,7 +103,7 @@ class DftkCommonRelaxInputGenerator(CommonRelaxInputGenerator):
                     'options': engines['relax']['options']
                 },
                 'pseudos': pseudo_family.get_pseudos(structure=structure),
-                'rcut': rcut,
+                'pseudo_rcut': pseudo_rcut,
                 'parameters': {
                     "basis_kwargs": {
                         "Ecut": recommended_ecut_wfc

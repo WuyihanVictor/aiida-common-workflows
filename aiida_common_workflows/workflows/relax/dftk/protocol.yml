@@ -6,6 +6,7 @@ fast:
     base:
         kpoints_distance: 1 # [1/AA]
         dftk:
+            pseudo_rcut: 10.0
             parameters:
                 model_kwargs:
                     xc: [":gga_x_pbe", ":gga_c_pbe"]
@@ -32,7 +33,7 @@ fastest:
     base:
         kpoints_distance: 2 # [1/AA]
         dftk:
-            rcut: 10.0
+            pseudo_rcut: 10.0
             parameters:
                 model_kwargs:
                     xc: [":gga_x_pbe", ":gga_c_pbe"]
@@ -55,7 +56,7 @@ verification-pbe-v1:
     base:
         kpoints_distance: 0.06 # [1/AA]
         dftk:
-            rcut: 10.0
+            pseudo_rcut: 10.0
             parameters:
                 model_kwargs:
                     xc: [":gga_x_pbe", ":gga_c_pbe"]
