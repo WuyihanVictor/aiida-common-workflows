@@ -32,6 +32,7 @@ fastest:
     base:
         kpoints_distance: 2 # [1/AA]
         dftk:
+            rcut: 10.0
             parameters:
                 model_kwargs:
                     xc: [":gga_x_pbe", ":gga_c_pbe"]
@@ -43,9 +44,7 @@ fastest:
                             $symbol: "ScfConvergenceDensity"
                     $function: "self_consistent_field"
                     checkpointfile: "scfres.jld2"
-                postscf:
-                  - $function: "compute_forces_cart"
-                  - $function: "compute_stresses_cart"
+                postscf: []
 
 
 verification-pbe-v1:
@@ -56,6 +55,7 @@ verification-pbe-v1:
     base:
         kpoints_distance: 0.06 # [1/AA]
         dftk:
+            rcut: 10.0
             parameters:
                 model_kwargs:
                     xc: [":gga_x_pbe", ":gga_c_pbe"]
